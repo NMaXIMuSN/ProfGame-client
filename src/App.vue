@@ -1,30 +1,61 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div id="nav" v-if="!loading">
+    <div><vNavBar /></div>
+    <main>
+      <router-view></router-view>
+    </main>
   </div>
-  <router-view/>
+  <v-loading class="loadind" v-else />
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+import { mapActions, mapState } from "vuex";
+import vNavBar from "@/components/navBar/vNavBar.vue";
+import VLoading from "./components/vLoading.vue";
+export default {
+  components: {
+    vNavBar,
+    VLoading,
+  },
+  methods: {
+    ...mapActions(["checAuth"]),
+  },
+  computed: {
+    ...mapState({
+      loading: (state) => state.loading,
+    }),
+  },
+  async mounted() {
+    if (localStorage.getItem("token")) {
+      await this.checAuth();
     }
-  }
+  },
+};
+</script>
+
+<style lang="scss">
+@import "@/assets/style.scss";
+* {
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+#nav {
+  background: $grey;
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  min-height: 100vh;
+}
+main {
+  min-width: 80vw;
+  min-height: 60vh;
+}
+.loadind {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
